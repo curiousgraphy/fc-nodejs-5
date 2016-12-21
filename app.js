@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
 var autoIncrement = require('mongoose-auto-increment');
 
 var db = mongoose.connection;
