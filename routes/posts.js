@@ -12,7 +12,7 @@ var fs = require('fs');
 var multer  = require('multer');
 var storage = multer.diskStorage({
     destination : function (req, file, callback) {
-        callback(null, '/tmp/uploads');
+        callback(null, uploadDir );
     },
     filename : function (req, file, callback) {
         callback(null, 'posts-' + Date.now() + '.'+ file.mimetype.split('/')[1] );
@@ -82,13 +82,7 @@ router.post('/write', upload.single('thumbnail') , csrfProtection, function(req,
         res.send(validationError);
     }else{
         Post.save(function(err){
-            if(req.file){
-                fs.rename( req.file.path , uploadDir +'/' + req.file.filename , function (err){ 
-                    res.redirect('/posts');
-                });
-            }else{
-                res.redirect('/posts');
-            }
+            res.redirect('/posts');
         });
     }
 });
@@ -108,13 +102,7 @@ router.post('/edit/:id', upload.single('thumbnail') , csrfProtection, function(r
             thumbnail : (req.file) ? req.file.filename : post.thumbnail
         };
         PostModel.update({ id : req.params.id }, { $set : query } , function(err){
-            if(req.file){
-                fs.rename( req.file.path , uploadDir +'/' + req.file.filename , function (err){ 
-                    res.redirect('/posts');
-                });
-            }else{
-                res.redirect('/posts');
-            }
+            res.redirect('/posts');
         });
     });
 });
