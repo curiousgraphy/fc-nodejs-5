@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var PostModel = require('../models/PostModel');
 var CommentModel = require('../models/CommentModel');
+var loginRequired = require('../libs/loginRequired');
 
 //이미지 저장되는 위치 설정
 var path = require('path');
@@ -66,16 +67,17 @@ router.post('/ajax_comment/delete', function(req, res){
     }
 });
 
-router.get('/write', parseForm, csrfProtection, function(req,res){
+router.get('/write',loginRequired, parseForm, csrfProtection, function(req,res){
     var post = {};
     res.render('posts/edit', { post : post, csrfToken: req.csrfToken() });
 });
 
-router.post('/write', upload.single('thumbnail') , csrfProtection, function(req, res){
+router.post('/write', loginRequired , upload.single('thumbnail') , csrfProtection, function(req, res){
     var Post = new PostModel({
         title : req.body.title,
         content : req.body.content,
-        thumbnail : (req.file) ? req.file.filename : ""
+        thumbnail : (req.file) ? req.file.filename : "",
+        username : req.user.username
     });
     var validationError = Post.validateSync();
     if(validationError){
@@ -87,13 +89,13 @@ router.post('/write', upload.single('thumbnail') , csrfProtection, function(req,
     }
 });
 
-router.get('/edit/:id', parseForm, csrfProtection, function(req, res){
+router.get('/edit/:id',loginRequired, parseForm, csrfProtection, function(req, res){
     PostModel.findOne( { id : req.params.id } , function(err,post){
         res.render('posts/edit', { post : post, csrfToken: req.csrfToken() });
     });
 });
 
-router.post('/edit/:id', upload.single('thumbnail') , csrfProtection, function(req, res){
+router.post('/edit/:id',loginRequired, upload.single('thumbnail') , csrfProtection, function(req, res){
     //그 이전 파일명을 먼저 받아온다.
     PostModel.findOne( {id : req.params.id} , function(err, post){
         if(req.file){  //요청중에 파일이 존재 할시 지운다.

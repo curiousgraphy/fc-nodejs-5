@@ -49,6 +49,9 @@ router.post('/join', function(req, res){
 });
 
 router.get('/login', function(req, res){
+    if(req.isAuthenticated()){ //로그인 되어있으면 posts파일로 리다이렉트
+        res.redirect('/posts');
+    }
     res.render('accounts/login', { flashMessage : req.flash().error });
 });
 
