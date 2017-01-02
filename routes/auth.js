@@ -39,7 +39,7 @@ passport.use(new FacebookStrategy({
 ));
 
 // http://localhost:3000/auth/facebook 접근시 facebook으로 넘길 url 작성해줌
-router.get('/facebook', passport.authenticate('facebook'));
+router.get('/facebook', passport.authenticate('facebook', { scope: 'email'}) );
 
 
 //인증후 페이스북에서 이 주소로 리턴해줌. 상단에 적은 callbackURL과 일치
